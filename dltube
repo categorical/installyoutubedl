@@ -1,0 +1,33 @@
+#!/bin/bash
+
+thisdir="$(dirname "$(readlink -f "$0")")"
+
+
+item="$thisdir/youtube-dl"
+[ -f "$item" ]||exit 1
+itemw="$(cygpath -w "$item")"
+
+PYTHON="$(which python 2>/dev/null)"
+[ -z "$PYTHON" ]&&exit 1
+
+configfile="$thisdir/configyoutubedl"
+[ -f "$configfile" ]||exit 1
+configfilew="$(cygpath -w "$configfile")"
+
+
+case $1 in
+    http*);&
+    https*);&
+    HTTP*);&
+    HTTPS*)
+        domain="$(echo -n "$1"|awk -F/ '{print $3}'|awk -F. '{print $2}')"
+        ;;
+    *);;
+esac
+[[ "$domain" =~ ^[a-zA-Z0-9]+$ ]]||unset domain
+dest='D:\mediafiles\dltube'"$domain"'\%(title)s.%(ext)s'
+
+
+#"$PYTHON" "$itemw" --config-location "$configfilew" "$@"
+"$PYTHON" "$itemw" --config-location "$configfilew" -o "$dest" "$@"
+

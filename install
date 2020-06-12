@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#http://ytdl-org.github.io/youtube-dl/download.html
+#https://github.com/ytdl-org/youtube-dl
+thisdir="$(cd "$(dirname BASH_SOURCE[0])" >/dev/null 2>&1 && pwd)"
+
+url='https://yt-dl.org/downloads/latest/youtube-dl'
+dest="$thisdir/youtube-dl"
+destw="$(cygpath -w "$dest")"
+
+
+curl -L "$url" -o "$destw"
+
+
