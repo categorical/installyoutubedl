@@ -12,3 +12,6 @@ destw="$(cygpath -w "$dest")"
 curl -L "$url" -o "$destw"
 
 
+bindir='D:\bin'
+if [ -d "$bindir" ];then ln -s "$thisdir/dltube" "$bindir";fi
+
