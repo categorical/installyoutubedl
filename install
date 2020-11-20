@@ -6,12 +6,12 @@ thisdir="$(cd "$(dirname BASH_SOURCE[0])" >/dev/null 2>&1 && pwd)"
 
 url='https://yt-dl.org/downloads/latest/youtube-dl'
 dest="$thisdir/youtube-dl"
-destw="$(cygpath -w "$dest")"
+#destw="$(cygpath -w "$dest")"
 
 
-curl -L "$url" -o "$destw"
+curl -L "$url" -o "$dest"
 
 
-bindir='D:\bin'
+bindir="$HOME/bin"
 if [ -d "$bindir" ];then ln -sf "$thisdir/dltube" "$bindir";fi
 
