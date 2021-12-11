@@ -3,15 +3,54 @@
 #http://ytdl-org.github.io/youtube-dl/download.html
 #https://github.com/ytdl-org/youtube-dl
 thisdir="$(cd "$(dirname BASH_SOURCE[0])" >/dev/null 2>&1 && pwd)"
-
 url='https://yt-dl.org/downloads/latest/youtube-dl'
-dest="$thisdir/youtube-dl"
-destw="$(cygpath -w "$dest")"
+dstaging="$thisdir/staging";[ -d "$dstaging" ]||mkdir "$dstaging"
+dprefix="$(cygpath -u 'd:/opt/youtubedl')"
+bindir='d:\bin'
+
+f="$dstaging/${url##*/}"
+frun="$dprefix/run.sh"
+_download(){
+    [ -f "$f" ]||curl -L "$url" -o"$f"
+    [ -f "$f" ]||return 1
+}
+_install(){
+    [ -d "$dprefix" ]||mkdir "$dprefix"
+    _download \
+        && rsync -a --info=progress2 "$f" "$dprefix/" \
+        && { cat <<-EOF>"$frun"
+			#/bin/bash
+			dthis="\$(cd "\$(dirname "\$0")" && pwd)"
+			_python="\$dthis/env/Scripts/python"
+			"\$_python" "\$(cygpath -w "\$dthis/$(basename "$f")")" "\$@"
+			EOF
+            } \
+        && chmod u+x "$frun" \
+        && pushd "$dprefix" 2>&1 >/dev/null \
+        && virtualenv env \
+        && popd >/dev/null \
+        && if [ -d "$bindir" ];then ln -sf "$thisdir/dltube" "$bindir";fi
+}
 
 
-curl -L "$url" -o "$destw"
 
 
-bindir='D:\bin'
-if [ -d "$bindir" ];then ln -sf "$thisdir/dltube" "$bindir";fi
+_remove(){
+    :
+    [ -d "$dprefix" ] && (set -x;rm -rf "$dprefix")
+    [ -L "$bindir/dltube" ] && (set -x;rm "$bindir/dltube" )
+}
 
+_usage(){
+	cat<<-EOF
+	SYNOPSIS
+	    $0 -h
+	    $0 --install
+	    $0 --remove
+	EOF
+}
+case $1 in
+    --install)_install;;
+    --remove)_remove;;
+    *)_usage;;
+esac

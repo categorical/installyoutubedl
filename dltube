@@ -1,14 +1,16 @@
 #!/bin/bash
 
 thisdir="$(dirname "$(readlink -f "$0")")"
+dprefix="$(cygpath -u 'd:/opt/youtubedl')"
+frun="$dprefix/run.sh"
+ddest="$(cygpath -u 'd:/mediafiles')"
 
+#item="$thisdir/youtube-dl"
+#[ -f "$item" ]||exit 1
+#itemw="$(cygpath -w "$item")"
 
-item="$thisdir/youtube-dl"
-[ -f "$item" ]||exit 1
-itemw="$(cygpath -w "$item")"
-
-PYTHON="$(which python 2>/dev/null)"
-[ -z "$PYTHON" ]&&exit 1
+#PYTHON="$(which python 2>/dev/null)"
+#[ -z "$PYTHON" ]&&exit 1
 
 configfile="$thisdir/configyoutubedl"
 [ -f "$configfile" ]||exit 1
@@ -25,9 +27,9 @@ case $1 in
     *);;
 esac
 [[ "$domain" =~ ^[a-zA-Z0-9]+$ ]]||unset domain
-dest='D:\mediafiles\dltube'"$domain"'\%(title)s.%(ext)s'
-
+dest="$(cygpath -w "$ddest/dltube$domain")"'\%(title)s.%(ext)s'
 
 #"$PYTHON" "$itemw" --config-location "$configfilew" "$@"
-"$PYTHON" "$itemw" --config-location "$configfilew" -o "$dest" "$@"
+#"$PYTHON" "$itemw" --config-location "$configfilew" -o "$dest" "$@"
+"$frun" --config-location "$configfilew" -o "$dest" "$@"
 
