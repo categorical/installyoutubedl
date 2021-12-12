@@ -24,7 +24,8 @@ _f(){
 }
 
 _patch(){
-    time sed -i "85s/%s\/'/%s\/0'/" "$(_f '8f733d6331d405feadfa81c6df3b5223')"
+    local f="$(_f '8f733d6331d405feadfa81c6df3b5223')"
+    [ ! -f "$f" ]||time sed -i "85s/%s\/'/%s\/0'/" "$f"
 }
 _pack(){
     [ -d "$dout" ]||return 1
