@@ -33,7 +33,9 @@ _install(){
 }
 
 
-
+_list(){
+    [ -f "$f" ]&& 7z l "$(cygpath -w "$f")"
+}
 
 _remove(){
     :
@@ -52,5 +54,6 @@ _usage(){
 case $1 in
     --install)_install;;
     --remove)_remove;;
+    --list)_list;;
     *)_usage;;
 esac
