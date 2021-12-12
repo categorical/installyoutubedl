@@ -17,11 +17,14 @@ _unpack(){
 }
 
 _f(){
-    printf '%s' "$dout/$(printf '%s' "$1"|base64 -d)"
+    while IFS= read -r -d $'\0';do
+        local _v="$(md5sum "$REPLY"|awk '{print $1}')"
+        [ "$_v" = "$1" ]&& { printf '%s' "$REPLY";return 0;}
+    done < <(find "$dout" -type f -print0|sort -rz)
 }
 
 _patch(){
-    sed -i "85s/%s\/'/%s\/0'/" "$(_f 'eW91dHViZV9kbC9leHRyYWN0b3IveHZpZGVvcy5weQ==')"
+    time sed -i "85s/%s\/'/%s\/0'/" "$(_f '8f733d6331d405feadfa81c6df3b5223')"
 }
 _pack(){
     [ -d "$dout" ]||return 1
