@@ -10,6 +10,8 @@ bindir='d:\bin'
 
 f="$dstaging/${url##*/}"
 frun="$dprefix/run.sh"
+fpatch="$thisdir/patch.sh"
+
 _download(){
     [ -f "$f" ]||curl -L "$url" -o"$f"
     [ -f "$f" ]||return 1
@@ -30,6 +32,9 @@ _install(){
         && virtualenv env \
         && popd >/dev/null \
         && if [ -d "$bindir" ];then ln -sf "$thisdir/dltube" "$bindir";fi
+
+    [ ! -f "$fpatch" ]||"$fpatch" --patch
+
 }
 
 
