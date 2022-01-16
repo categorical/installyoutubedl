@@ -5,8 +5,17 @@
 thisdir="$(cd "$(dirname BASH_SOURCE[0])" >/dev/null 2>&1 && pwd)"
 url='https://yt-dl.org/downloads/latest/youtube-dl'
 dstaging="$thisdir/staging";[ -d "$dstaging" ]||mkdir "$dstaging"
+
+isx=
+case "$(uname -s)" in 'Linux')isx='t';; esac
+
+dprefix='/opt/youtubedl'
+bindir="$HOME/bin"
+
+if [ ! "$isx" = 't' ];then
 dprefix="$(cygpath -u 'd:/opt/youtubedl')"
 bindir='d:\bin'
+fi
 
 f="$dstaging/${url##*/}"
 frun="$dprefix/run.sh"
@@ -20,25 +29,37 @@ _install(){
     [ -d "$dprefix" ]||mkdir "$dprefix"
     _download \
         && rsync -a --info=progress2 "$f" "$dprefix/" \
-        && { cat <<-EOF>"$frun"
+        && if [ "$isx" = 't' ];then
+            { cat <<-EOF>"$frun"
+			#/bin/bash
+			dthis="\$(cd "\$(dirname "\$0")" && pwd)"
+			_python="\$dthis/env/bin/python"
+			"\$_python" "\$dthis/$(basename "$f")" "\$@"
+			EOF
+            } \
+            else
+            { cat <<-EOF>"$frun"
 			#/bin/bash
 			dthis="\$(cd "\$(dirname "\$0")" && pwd)"
 			_python="\$dthis/env/Scripts/python"
 			"\$_python" "\$(cygpath -w "\$dthis/$(basename "$f")")" "\$@"
 			EOF
             } \
+            fi \
         && chmod u+x "$frun" \
         && pushd "$dprefix" 2>&1 >/dev/null \
         && virtualenv env \
         && popd >/dev/null \
         && if [ -d "$bindir" ];then ln -sf "$thisdir/dltube" "$bindir";fi
 
+    if [ "$isx" = 't' ];then return 0;fi
     [ ! -f "$fpatch" ]||"$fpatch" --patch
 
 }
 
 
 _contents(){
+    if [ "$isx" = 't' ];then return 1;fi
     [ -f "$f" ]&& 7z l "$(cygpath -w "$f")"
 }
 

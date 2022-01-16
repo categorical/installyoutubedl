@@ -3,9 +3,14 @@ _infof(){ local f=$1;shift;printf "\033[96minfo: \033[0m%s\n" "$(printf "$f" "$@
 _errorf(){ local f=$1;shift;printf "\033[91merror: \033[0m%s\n" "$(printf "$f" "$@")";}
 #dthis="$(dirname "$(readlink -f "$0")")"
 dthis="$(cd "$(dirname "$0")"&&pwd)"
+isx=;case "$(uname -s)" in 'Linux')isx='t';; esac
+declare -p 'isx'
 
 dstaging="$dthis/staging"
+dprefix='/opt/youtubedl'
+if [ ! "$isx" = 't' ];then
 dprefix="$(cygpath -u 'd:\opt\youtubedl')"
+fi
 fstaging="$dstaging/youtube-dl"
 factive="$dprefix/$(basename "$fstaging")"
 dout="$dstaging/contents"
