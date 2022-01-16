@@ -3,9 +3,11 @@ _infof(){ local f=$1;shift;printf "\033[96minfo: \033[0m%s\n" "$(printf "$f" "$@
 _errorf(){ local f=$1;shift;printf "\033[91merror: \033[0m%s\n" "$(printf "$f" "$@")";}
 #dthis="$(dirname "$(readlink -f "$0")")"
 dthis="$(cd "$(dirname "$0")"&&pwd)"
+droot="$(cd "$dthis/.."&&pwd)"
 
-dstaging="$dthis/staging"
-dprefix="$(cygpath -u 'd:\opt\youtubedl')"
+dstaging="$droot/staging"
+dprefix='/opt/youtubedl'
+#dprefix="$(cygpath -u 'd:\opt\youtubedl')"
 fstaging="$dstaging/youtube-dl"
 factive="$dprefix/$(basename "$fstaging")"
 dout="$dstaging/contents"
@@ -13,7 +15,8 @@ dout="$dstaging/contents"
 _unpack(){
     [ ! -d "$dout" ]||(set -x;rm -rf "$dout")
     [ -f "$fstaging" ]||return 1
-    7z x "$(cygpath -w "$fstaging")" -aoa -o"$(cygpath -w "$dout")"
+    #7z x "$(cygpath -w "$fstaging")" -aoa -o"$(cygpath -w "$dout")"
+    7z x "$fstaging" -aoa -o"$dout"
 }
 
 _f(){
@@ -29,8 +32,10 @@ _patch(){
 }
 _pack(){
     [ -d "$dout" ]||return 1
-    7z u "$(cygpath -w "$factive")." "$(cygpath -w "$dout")\*"
-    chmod 644 "$factive"
+    #7z u "$(cygpath -w "$factive")." "$(cygpath -w "$dout")\*"
+    # the dot negates a default suffix
+    sudo 7z u "$factive." "$dout/*"
+    sudo chmod 644 "$factive"
 }
 _clean(){
     [ ! -d "$dout" ]||(set -x;rm -rf "$dout")

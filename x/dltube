@@ -1,9 +1,11 @@
 #!/bin/bash
 
 thisdir="$(dirname "$(readlink -f "$0")")"
-dprefix="$(cygpath -u 'd:/opt/youtubedl')"
+dprefix='/opt/youtubedl'
+ddest="$HOME/mediafiles"
+#dprefix="$(cygpath -u 'd:/opt/youtubedl')"
+#ddest="$(cygpath -u 'd:/mediafiles')"
 frun="$dprefix/run.sh"
-ddest="$(cygpath -u 'd:/mediafiles')"
 
 _domain(){
     local domain="$(echo -n "$1"|awk -F/ '{print $3}'|awk -F. '{print $2}')"
@@ -14,7 +16,8 @@ _domain(){
 _run(){
     local url;for url in "$@";do :;done
     case "$url" in http*|https*|HTTP*|HTTPS*);;*)_usage 1;;esac
-    local dest="$(cygpath -w "$ddest/dltube$(_domain "$url")")"'\%(title)s.%(ext)s'
+    #local dest="$(cygpath -w "$ddest/dltube$(_domain "$url")")"'\%(title)s.%(ext)s'
+    local dest="$ddest/dltube$(_domain "$url")"'/%(title)s.%(ext)s'
     "$frun" -o "$dest" "$@"
 }
 
